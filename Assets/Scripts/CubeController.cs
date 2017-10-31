@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CubeController : MonoBehaviour {
 	GameController myGameController;
+	public int myX, myY;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +17,6 @@ public class CubeController : MonoBehaviour {
 	}
 
 	void OnMouseDown () {
-		myGameController.ProcessClick (gameObject);
+		myGameController.ProcessClick (gameObject, myX, myY);
 	}
 }
