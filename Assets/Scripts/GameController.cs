@@ -5,7 +5,18 @@ using UnityEngine;
 public class GameController : MonoBehaviour {
 	public GameObject cubePrefab;
 	Vector3 cubePosition;
-	public static GameObject activeCube;
+	GameObject activeCube;
+
+	public void ProcessClick (GameObject clickedCube) {
+		// turn the previously clicked cube white
+		if (activeCube != null) {
+			activeCube.GetComponent<Renderer> ().material.color = Color.white;
+		}
+
+		// now turn the currently clicked cube red
+		clickedCube.GetComponent<Renderer> ().material.color = Color.red;
+		activeCube = clickedCube;
+	}
 
 	// Use this for initialization
 	void Start () {

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CubeController : MonoBehaviour {
+	GameController myGameController;
 
 	// Use this for initialization
 	void Start () {
-		
+		myGameController = GameObject.Find ("GameControllerObject").GetComponent<GameController> ();
 	}
 	
 	// Update is called once per frame
@@ -15,13 +16,6 @@ public class CubeController : MonoBehaviour {
 	}
 
 	void OnMouseDown () {
-		// turn the previously clicked cube white
-		if (GameController.activeCube != null) {
-			GameController.activeCube.GetComponent<Renderer> ().material.color = Color.white;
-		}
-
-		// now turn the currently clicked cube red
-		gameObject.GetComponent<Renderer> ().material.color = Color.red;
-		GameController.activeCube = gameObject;
+		myGameController.ProcessClick (gameObject);
 	}
 }
