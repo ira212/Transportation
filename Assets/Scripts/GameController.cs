@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour {
 	public GameObject cubePrefab;
+	public Text cargoScoreText;
 	Vector3 cubePosition;
 	GameObject activeCube;
 	int airplaneX, airplaneY, startX, startY;
@@ -113,7 +115,7 @@ public class GameController : MonoBehaviour {
 		if (Time.time > turnTimer) {
 			LoadCargo();
 			DeliverCargo ();
-			print ("Cargo: " + airplaneCargo + "   Score: " + score);
+			cargoScoreText.text = "Cargo: " + airplaneCargo + "   Score: " + score;
 
 			turnTimer += turnLength;
 		}
