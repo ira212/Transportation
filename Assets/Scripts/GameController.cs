@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour {
 	int airplaneCargo, airplaneCargoMax;
 	int cargoGain;
 	int score;
+	int moveY, moveX;
 
 
 	// Use this for initialization
@@ -54,6 +55,8 @@ public class GameController : MonoBehaviour {
 		depotY = 0;
 		grid [depotX, depotY].GetComponent<Renderer> ().material.color = Color.black;
 
+		moveX = 0;
+		moveY = 0;
 	}
 	
 	public void ProcessClick (GameObject clickedCube, int x, int y) {
@@ -67,27 +70,6 @@ public class GameController : MonoBehaviour {
 				// activate it
 				airplaneActive = true;
 				clickedCube.transform.localScale *= 1.5f;
-			}
-		}
-		// if the player clicked the sky (not an airplane)
-		else {
-			if (airplaneActive) {
-				// remove the airplane from it's old spot, if it's the depot set it to black
-				if (airplaneX == depotX && airplaneY == depotY) {
-					grid [depotX, depotY].GetComponent<Renderer> ().material.color = Color.black;
-				}
-				// otherwise, set it to white
-				else {
-					grid [airplaneX, airplaneY].GetComponent<Renderer> ().material.color = Color.white;
-				}
-
-				grid[airplaneX, airplaneY].transform.localScale /= 1.5f;
-
-				// put the airplane in it's new spot
-				airplaneX = x;
-				airplaneY = y;
-				grid[x, y].GetComponent<Renderer>().material.color = Color.red;
-				grid[x, y].transform.localScale *= 1.5f;
 			}
 		}
 	}
@@ -109,10 +91,75 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
+	void DetectKeyboardInput() {
+		if (Input.GetKeyDown (KeyCode.DownArrow)) {
+			moveY = -1;
+			moveX = 0;
+		}
+		else if (Input.GetKeyDown (KeyCode.UpArrow)) {
+			moveY = 1;
+			moveX = 0;
+		}
+		else if (Input.GetKeyDown (KeyCode.RightArrow)) {
+			moveY = 0;
+			moveX = 1;
+		}
+		else if (Input.GetKeyDown (KeyCode.LeftArrow)) {
+			moveY = 0;
+			moveX = -1;
+		}
+	}
+
+	void MoveAirplane () {
+
+		if (airplaneActive) {
+			// remove the airplane from it's old spot, if it's the depot set it to black
+			if (airplaneX == depotX && airplaneY == depotY) {
+				grid [depotX, depotY].GetComponent<Renderer> ().material.color = Color.black;
+			}
+			// otherwise, set it to white
+			else {
+				grid [airplaneX, airplaneY].GetComponent<Renderer> ().material.color = Color.white;
+			}
+
+			grid[airplaneX, airplaneY].transform.localScale /= 1.5f;
+
+			// put the airplane in it's new spot
+			airplaneX += moveX;
+			airplaneY += moveY;
+
+			// check to ensure the plane doesn't go out of bounds
+			if (airplaneX >= gridX) {
+				airplaneX = gridX - 1;
+			}
+			else if (airplaneX < 0) {
+				airplaneX = 0;
+			}
+
+			if (airplaneY >= gridY) {
+				airplaneY = gridY - 1;
+			}
+			else if (airplaneY < 0) {
+				airplaneY = 0;
+			}
+
+			grid[airplaneX, airplaneY].GetComponent<Renderer>().material.color = Color.red;
+			grid[airplaneX, airplaneY].transform.localScale *= 1.5f;
+		}
+
+		// reset movement for next turn
+		moveX = 0;
+		moveY = 0;
+
+	}
+
 	// Update is called once per frame
 	void Update () {
+		DetectKeyboardInput ();
 		
 		if (Time.time > turnTimer) {
+			MoveAirplane ();
+
 			LoadCargo();
 			DeliverCargo ();
 			cargoScoreText.text = "Cargo: " + airplaneCargo + "   Score: " + score;
