@@ -18,6 +18,7 @@ public class GameController : MonoBehaviour {
 	int cargoGain;
 	int score;
 	int moveY, moveX;
+	int targetX, targetY;
 
 
 	// Use this for initialization
@@ -49,6 +50,8 @@ public class GameController : MonoBehaviour {
 		startY = gridY - 1;
 		airplaneX = startX;
 		airplaneY = startY;
+		targetX = airplaneX;
+		targetY = airplaneY;
 		grid [airplaneX, airplaneY].GetComponent<Renderer> ().material.color = Color.red;
 		airplaneActive = false;
 		depotX = gridX - 1;
@@ -72,6 +75,10 @@ public class GameController : MonoBehaviour {
 				clickedCube.transform.localScale *= 1.5f;
 			}
 		}
+		else if (airplaneActive) {
+			targetX = x;
+			targetY = y;
+		}
 	}
 
 	void LoadCargo () {
@@ -91,26 +98,30 @@ public class GameController : MonoBehaviour {
 		}
 	}
 
-	void DetectKeyboardInput() {
-		if (Input.GetKeyDown (KeyCode.DownArrow)) {
+	void CalculateDirection() {
+		if (airplaneY > targetY) {
 			moveY = -1;
-			moveX = 0;
 		}
-		else if (Input.GetKeyDown (KeyCode.UpArrow)) {
+		else if (airplaneY < targetY) {
 			moveY = 1;
-			moveX = 0;
 		}
-		else if (Input.GetKeyDown (KeyCode.RightArrow)) {
+		else {
 			moveY = 0;
+		}
+
+		if (airplaneX < targetX) {
 			moveX = 1;
 		}
-		else if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			moveY = 0;
+		else if (airplaneX > targetX) {
 			moveX = -1;
+		}
+		else {
+			moveX = 0;
 		}
 	}
 
 	void MoveAirplane () {
+		CalculateDirection ();
 
 		if (airplaneActive) {
 			// remove the airplane from it's old spot, if it's the depot set it to black
@@ -146,17 +157,10 @@ public class GameController : MonoBehaviour {
 			grid[airplaneX, airplaneY].GetComponent<Renderer>().material.color = Color.red;
 			grid[airplaneX, airplaneY].transform.localScale *= 1.5f;
 		}
-
-		// reset movement for next turn
-		moveX = 0;
-		moveY = 0;
-
 	}
 
 	// Update is called once per frame
 	void Update () {
-		DetectKeyboardInput ();
-		
 		if (Time.time > turnTimer) {
 			MoveAirplane ();
 
